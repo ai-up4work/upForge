@@ -34,7 +34,6 @@ export default async function Home() {
             and code you fully own.
           </p>
           <div className="home-intro-actions">
-            <SceneLink href="/contact" className="btn-line"><span>Start a project</span><span aria-hidden="true">→</span></SceneLink>
             <SceneLink href="/work" className="tracked link-under">See the work</SceneLink>
           </div>
         </Reveal>
