@@ -1,0 +1,166 @@
+import mongoose, { Schema, Model } from 'mongoose';
+
+// Gallery Model (unchanged)
+interface IGalleryImage {
+  src: string;
+  alt: string;
+  orientation: 'horizontal' | 'vertical';
+  order: number;
+  createdAt: Date;
+}
+
+const GalleryImageSchema = new Schema<IGalleryImage>({
+  src: { type: String, required: true },
+  alt: { type: String, required: true },
+  orientation: { type: String, enum: ['horizontal', 'vertical'], required: true },
+  order: { type: Number, required: true, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+});
+
+// Enhanced Project Model with full content support
+interface IProject {
+  slug: string;
+  title: string;
+  description: string;
+  author?: string;
+  image: string;
+  images?: string[];
+  avatars?: { src: string }[]; // Added avatars property
+  createdAt?: Date;
+  updatedAt?: Date;
+  publishedAt: Date;
+  featured: boolean;
+  order: number;
+  link?: string;
+  tags?: string[];
+  content: string;
+  metadata?: {
+    readTime?: string;
+    views?: number;
+    likes?: number;
+  };
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    ogImage?: string;
+  };
+}
+
+const ProjectSchema = new Schema<IProject>({
+  slug: { type: String, required: true, unique: true, index: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  image: { type: String, required: true },
+  images: [{ type: String }],
+  avatars: [{ src: { type: String } }], // Added avatars schema
+  publishedAt: { type: Date, default: Date.now },
+  featured: { type: Boolean, default: false },
+  order: { type: Number, default: 0 },
+  link: { type: String },
+  tags: [{ type: String }],
+  content: { type: String, required: true },
+  metadata: {
+    readTime: { type: String },
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+  },
+  seo: {
+    metaTitle: { type: String },
+    metaDescription: { type: String },
+    ogImage: { type: String },
+  },
+}, { timestamps: true });
+
+// Enhanced Blog Post Model with full content support
+interface IBlogPost {
+  slug: string;
+  title: string;
+  description: string;
+  image?: string;
+  publishedAt: Date;
+  featured: boolean;
+  order: number;
+  tags?: string[];
+  content: string; // MDX/Markdown content
+  author?: string;
+  metadata?: {
+    readTime?: string;
+    views?: number;
+    likes?: number;
+    tag?: string; // Added tag for category
+  };
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    ogImage?: string;
+  };
+}
+
+const BlogPostSchema = new Schema<IBlogPost>({
+  slug: { type: String, required: true, unique: true, index: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  image: { type: String },
+  publishedAt: { type: Date, default: Date.now },
+  featured: { type: Boolean, default: false },
+  order: { type: Number, default: 0 },
+  tags: [{ type: String }],
+  content: { type: String, required: true }, // Full MDX/Markdown content
+  author: { type: String },
+  metadata: {
+    readTime: { type: String },
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+    tag: { type: String }, // Category tag
+  },
+  seo: {
+    metaTitle: { type: String },
+    metaDescription: { type: String },
+    ogImage: { type: String },
+  },
+}, { timestamps: true });
+
+// Export models
+export const GalleryImage: Model<IGalleryImage> = 
+  mongoose.models.GalleryImage || mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema);
+
+export const Project: Model<IProject> = 
+  mongoose.models.Project || mongoose.model<IProject>('Project', ProjectSchema);
+
+export const BlogPost: Model<IBlogPost> = 
+  mongoose.models.BlogPost || mongoose.model<IBlogPost>('BlogPost', BlogPostSchema);
+
+// Export types
+export type { IGalleryImage, IProject, IBlogPost };
+// Project enquiries from the contact form
+interface ILead {
+  name: string;
+  email: string;
+  company?: string;
+  needs: string[];
+  budget?: string;
+  timeline?: string;
+  message?: string;
+  source?: string;
+  status: "new" | "contacted" | "won" | "closed";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const LeadSchema = new Schema<ILead>(
+  {
+    name: { type: String, required: true, maxlength: 120 },
+    email: { type: String, required: true, maxlength: 200 },
+    company: { type: String, maxlength: 160 },
+    needs: [{ type: String, maxlength: 60 }],
+    budget: { type: String, maxlength: 60 },
+    timeline: { type: String, maxlength: 60 },
+    message: { type: String, maxlength: 5000 },
+    source: { type: String, maxlength: 200 },
+    status: { type: String, enum: ["new", "contacted", "won", "closed"], default: "new", index: true },
+  },
+  { timestamps: true },
+);
+
+export const Lead: Model<ILead> = mongoose.models.Lead || mongoose.model<ILead>("Lead", LeadSchema);
+export type { ILead };
