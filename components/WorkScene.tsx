@@ -44,17 +44,15 @@ export default function WorkScene({ projects: all }: { projects: ProjectDTO[] })
   const pick = (slug: string) => {
     setSvc(slug);
     setStart(0);
-    setActive(0);
+    setActive(-1);
     const url = new URL(window.location.href);
     if (slug) url.searchParams.set("service", slug);
     else url.searchParams.delete("service");
     window.history.replaceState(null, "", url);
   };
 
-  useEffect(() => {
-    const t = setTimeout(() => setActive((a) => (a === -1 ? 0 : a)), reduce ? 0 : 1250);
-    return () => clearTimeout(t);
-  }, [reduce]);
+  // No card is open until you hover one, scroll, or use the arrow keys (as on the home page).
+  const via = useRef<"hover" | "key">("hover");
 
   const select = useCallback(
     (abs: number) => {
@@ -72,7 +70,8 @@ export default function WorkScene({ projects: all }: { projects: ProjectDTO[] })
       if (now - lock.current < 650) return;
       lock.current = now;
       if (d < 0 && active <= 0) return go("/");
-      select(active + d);
+      via.current = "key";
+      select(active < 0 ? 0 : active + d);
     };
     const onWheel = (e: WheelEvent) => {
       if (window.innerWidth < 900) return;
@@ -139,7 +138,15 @@ export default function WorkScene({ projects: all }: { projects: ProjectDTO[] })
           <span className="work-frame-topo" />
         </motion.div>
 
-        <ul className="work-cards" role="list" key={svc || "all"}>
+        <ul
+          className="work-cards"
+          role="list"
+          key={svc || "all"}
+          onPointerLeave={() => {
+            window.clearTimeout(hoverT.current);
+            if (via.current === "hover") setActive(-1); // close again when the mouse leaves the row
+          }}
+        >
           {windowed.map((p, k) => {
             const i = start + k;
             const on = i === active;
@@ -156,7 +163,7 @@ export default function WorkScene({ projects: all }: { projects: ProjectDTO[] })
                 onPointerMove={() => {
                   if (on || !window.matchMedia("(hover: hover)").matches) return;
                   window.clearTimeout(hoverT.current);
-                  hoverT.current = window.setTimeout(() => setActive(i), 110);
+                  hoverT.current = window.setTimeout(() => { via.current = "hover"; setActive(i); }, 110);
                 }}
                 onPointerLeave={() => window.clearTimeout(hoverT.current)}
               >
@@ -180,11 +187,11 @@ export default function WorkScene({ projects: all }: { projects: ProjectDTO[] })
         </ul>
 
         <motion.div className="work-pager" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5, duration: 0.8 }}>
-          <button onClick={() => select(active - 1)} disabled={active <= 0} aria-label="Previous project">‹</button>
+          <button onClick={() => { via.current = "key"; select(active - 1); }} disabled={active <= 0} aria-label="Previous project">‹</button>
           <span className="tracked">
             <b>{pad(Math.max(active, 0) + 1)}</b> / {pad(n)}
           </span>
-          <button onClick={() => select(active + 1)} disabled={active >= n - 1} aria-label="Next project">›</button>
+          <button onClick={() => { via.current = "key"; select(active + 1); }} disabled={active >= n - 1} aria-label="Next project">›</button>
           {projects[active] && (
             <SceneLink href={`/work/${projects[active].slug}`} className="tracked work-open">
               Open case study <span aria-hidden="true">→</span>
