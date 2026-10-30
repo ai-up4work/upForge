@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { Copy, ImagePlus, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { uploadImage, useConfirm, useToast } from "./ui";
-import type { GalleryImageDTO } from "@/lib/types";
+import type { GalleryImageDTO, ProjectDTO } from "@/lib/types";
+import { cloudinaryId } from "@/lib/format";
 
 type Group = "all" | "gallery" | "projects" | "blog";
 
@@ -16,6 +17,8 @@ export default function GalleryManager({ mediaRoot, cloudReady }: { mediaRoot: s
   const [group, setGroup] = useState<Group>("all");
   const [uploads, setUploads] = useState<{ name: string; pct: number }[]>([]);
   const [over, setOver] = useState(false);
+  const [projects, setProjects] = useState<ProjectDTO[]>([]);
+  const [project, setProject] = useState(""); // "" = all projects
 
   const load = async () => {
     setLoading(true);
@@ -23,6 +26,8 @@ export default function GalleryManager({ mediaRoot, cloudReady }: { mediaRoot: s
       const r = await (await fetch("/api/gallery?scope=all", { cache: "no-store" })).json();
       if (!r.success) throw new Error(r.error);
       setImages(r.data);
+      const pr = await (await fetch("/api/projects", { cache: "no-store" })).json().catch(() => null);
+      if (pr?.success) setProjects(pr.data);
     } catch {
       toast.error("Couldn't load images. Check the Cloudinary keys.");
     } finally {
@@ -38,7 +43,23 @@ export default function GalleryManager({ mediaRoot, cloudReady }: { mediaRoot: s
     images.forEach((i) => c[groupOf(i.id)]++);
     return c;
   }, [images]);
-  const shown = group === "all" ? images : images.filter((i) => groupOf(i.id) === group);
+  // Which project an image belongs to: used on the project (cover, screens, logo), or uploaded into its folder.
+  const ownerOf = useMemo(() => {
+    const byId = new Map<string, ProjectDTO>();
+    const bySlug = new Map(projects.map((p) => [p.slug, p]));
+    for (const p of projects) for (const u of [p.image, ...(p.images ?? []), ...(p.avatars ?? []).map((a) => a.src)]) {
+      const id = cloudinaryId(u);
+      if (id) byId.set(id, p);
+    }
+    return (img: GalleryImageDTO) => byId.get(img.id) ?? bySlug.get(img.id.match(/Project_Images\/([^/]+)\//)?.[1] ?? "");
+  }, [projects]);
+  const projectCounts = useMemo(() => {
+    const c = new Map<string, number>();
+    images.forEach((i) => { const p = ownerOf(i); if (p) c.set(p.slug, (c.get(p.slug) ?? 0) + 1); });
+    return c;
+  }, [images, ownerOf]);
+  const byGroup = group === "all" ? images : images.filter((i) => groupOf(i.id) === group);
+  const shown = project ? images.filter((i) => ownerOf(i)?.slug === project) : byGroup;
 
   const upload = async (files: File[]) => {
     if (!files.length) return;
@@ -106,18 +127,27 @@ export default function GalleryManager({ mediaRoot, cloudReady }: { mediaRoot: s
       <div className="a-toolbar">
         <div className="a-seg" role="tablist" aria-label="Filter images">
           {(["all", "gallery", "projects", "blog"] as Group[]).map((g) => (
-            <button key={g} role="tab" aria-selected={group === g} onClick={() => setGroup(g)}>
+            <button key={g} role="tab" aria-selected={!project && group === g} onClick={() => { setGroup(g); setProject(""); }}>
               {{ all: "All", gallery: "Gallery", projects: "Projects", blog: "Journal" }[g]} <span>{counts[g]}</span>
             </button>
           ))}
         </div>
+        {projects.length > 0 && (
+          <label className="a-proj-filter">
+            <span>Project</span>
+            <select value={project} onChange={(e) => setProject(e.target.value)} aria-label="Show images from one project">
+              <option value="">All projects</option>
+              {projects.map((p) => <option key={p.slug} value={p.slug}>{p.title} ({projectCounts.get(p.slug) ?? 0})</option>)}
+            </select>
+          </label>
+        )}
         <button className="a-btn ghost sm" onClick={load}><RefreshCw size={13} /> Refresh</button>
       </div>
 
       {loading ? (
         <div className="a-img-grid">{Array.from({ length: 8 }, (_, i) => <div className="a-img skeleton" key={i} />)}</div>
       ) : shown.length === 0 ? (
-        <div className="a-empty"><h3>No images here yet</h3><p>Upload photos above and they'll appear on the Gallery page.</p></div>
+        <div className="a-empty"><h3>{project ? "No images found for this project" : "No images here yet"}</h3><p>Upload photos above and they'll appear on the Gallery page.</p></div>
       ) : (
         <div className="a-img-grid">
           {shown.map((img) => (
@@ -125,7 +155,7 @@ export default function GalleryManager({ mediaRoot, cloudReady }: { mediaRoot: s
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img.thumbnail} alt="" loading="lazy" />
               <figcaption>
-                <span>{groupOf(img.id) === "gallery" ? "Gallery" : groupOf(img.id) === "projects" ? "Project" : "Journal"} · {img.width}×{img.height}</span>
+                <span title={ownerOf(img)?.title}>{ownerOf(img)?.title ?? (groupOf(img.id) === "gallery" ? "Gallery" : groupOf(img.id) === "projects" ? "Project" : "Journal")} · {img.width}×{img.height}</span>
                 <div>
                   <button aria-label="Copy image URL" title="Copy URL" onClick={() => copy(img.url)}><Copy size={13} /></button>
                   <button aria-label="Delete image" title="Delete" onClick={() => remove(img)}><Trash2 size={13} /></button>

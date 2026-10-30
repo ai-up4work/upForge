@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import "./FeaturedCards.css";
 import ProjectGlyph from "./ProjectGlyph";
 import Showcase from "./Showcase";
 import { SceneLink } from "./Scene";
@@ -30,9 +31,9 @@ export default function FeaturedCards({ projects }: { projects: ProjectDTO[] }) 
           const kind = servicesOf(p).slice(0, 2).map((s) => s.name).join(" · ") || (p.tags ?? []).slice(0, 2).join(" · ");
           return (
             <li key={p.slug} className={`fc-card${i === on ? " is-on" : ""}`} onPointerMove={() => i !== on && hover(i)}>
-              <SceneLink href={`/work/${p.slug}`} bar={cld(cover, 900)} className="fc-hit" onFocus={() => setOn(i)} aria-label={`${p.title}: open case study`}>
+              <SceneLink href={`/work/${p.slug}`} bar={cld(cover, 900)} className="fc-hit" style={{ position: "absolute", overflow: "hidden" }} onFocus={() => setOn(i)} aria-label={`${p.title}: open case study`}>
                 <span className="wcard-marker" aria-hidden="true" />
-                <span className="fc-media" aria-hidden="true">
+                <span className="fc-media" aria-hidden="true" style={{ position: "absolute", overflow: "hidden" }}>
                   <Showcase flat slug={p.slug} title={p.title} image={cover} link={p.link} sizes="(min-width: 900px) 42vw, 1px" />
                 </span>
                 <span className="fc-glyph" aria-hidden="true"><ProjectGlyph p={p} asImage /></span>

@@ -4,7 +4,7 @@ import { BlogPost, Project } from "./models";
 import { cloudinary, isCloudinaryConfigured, MEDIA_ROOT } from "./cloudinary";
 import { demoGallery, demoPosts, demoProjects } from "./demo";
 import type { GalleryImageDTO, PostDTO, ProjectDTO } from "./types";
-import { cld } from "./format";
+import { cld, cloudinaryId } from "./format";
 
 /** Server-side reads used by pages. Falls back to demo content only when no database is configured. */
 
@@ -114,6 +114,7 @@ export async function getGalleryWithProjects(): Promise<GalleryImageDTO[]> {
   const [images, projects] = await Promise.all([getGallery(), getProjects()]);
   const bySlug = new Map(projects.map((p) => [p.slug, p]));
   const seen = new Set<string>();
+  const seenIds = new Set(images.map((i) => i.id));
   const out: GalleryImageDTO[] = images.map((img) => {
     seen.add(img.url);
     const m = img.id.match(/Project_Images\/([^/]+)\//);
@@ -122,12 +123,17 @@ export async function getGalleryWithProjects(): Promise<GalleryImageDTO[]> {
   });
   // tag gallery images that a project uses even if they live elsewhere
   const owner = new Map<string, ProjectDTO>();
-  for (const p of projects) for (const u of [p.image, ...(p.images ?? [])]) if (u) owner.set(u, p);
-  for (const img of out) if (!img.project && owner.has(img.url)) { const p = owner.get(img.url)!; img.project = { slug: p.slug, title: p.title }; }
+  for (const p of projects) for (const u of [p.image, ...(p.images ?? [])]) { if (!u) continue; owner.set(u, p); const id = cloudinaryId(u); if (id) owner.set(id, p); }
+  for (const img of out) {
+    if (img.project) continue;
+    const p = owner.get(img.id) ?? owner.get(img.url);
+    if (p) img.project = { slug: p.slug, title: p.title };
+  }
   // add project images that aren't in the gallery folder
   for (const p of projects) {
     [p.image, ...(p.images ?? [])].filter(Boolean).forEach((u, i) => {
-      if (seen.has(u)) return;
+      const id = cloudinaryId(u);
+      if (seen.has(u) || (id && seenIds.has(id))) return;
       seen.add(u);
       out.push({ id: `${p.slug}-${i}`, url: u, thumbnail: cld(u, 300), medium: cld(u, 900), large: cld(u, 1920), width: 1600, height: 1000, project: { slug: p.slug, title: p.title } });
     });

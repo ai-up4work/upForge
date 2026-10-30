@@ -1,5 +1,6 @@
 import ProjectTile from "./ProjectTile";
 import FeaturedCards from "./FeaturedCards";
+import "./FeaturedCards.css";
 import type { ProjectDTO } from "@/lib/types";
 
 /**
