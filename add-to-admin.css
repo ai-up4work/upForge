@@ -1,3 +1,9 @@
 .a-toolbar { flex-wrap: wrap; gap: 10px; }
 .a-proj-filter { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-size: 13px; color: var(--a-ink-2); }
 .a-proj-filter select { height: 34px; max-width: 260px; padding: 0 10px; border: 1px solid var(--a-line-2); border-radius: 8px; background: var(--a-panel); color: var(--a-ink); font: inherit; font-size: 13px; }
+.a-marks { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
+.a-mark { display: grid; justify-items: center; gap: 6px; padding: 12px 6px 9px; border: 1px solid var(--a-line-2); border-radius: 10px; background: #0b1236; color: #8f98e0; cursor: pointer; transition: border-color .2s, box-shadow .2s; }
+.a-mark span { font-size: 11px; color: #c9cff5; }
+.a-mark-svg { width: 38px; height: 38px; }
+.a-mark:hover { border-color: #5865d8; }
+.a-mark.on { border-color: var(--a-accent); box-shadow: 0 0 0 3px var(--a-accent-soft); color: #c2c8ff; }

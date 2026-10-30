@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import ProjectGlyph from "./ProjectGlyph";
 import Showcase from "./Showcase";
 import { SceneLink } from "./Scene";
-import { cld, titleLines } from "@/lib/format";
+import { titleLines } from "@/lib/format";
 import type { ProjectDTO } from "@/lib/types";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -62,11 +61,7 @@ export default function ProjectScene({ p, kicker }: { p: ProjectDTO; kicker: str
             transition={{ type: "spring", stiffness: 180, damping: 18, delay: r(0.9) }}
             aria-hidden="true"
           >
-            {p.avatars?.[0]?.src ? (
-              <Image src={cld(p.avatars[0].src, 300)} alt="" fill sizes="120px" style={{ objectFit: "cover" }} />
-            ) : (
-              <ProjectGlyph p={p} />
-            )}
+            <ProjectGlyph p={p} />
           </motion.span>
           <h1 className="detail-title" style={{ ["--fs" as string]: fs, ["--t" as string]: top }}>
             {lines.map((l, i) => (

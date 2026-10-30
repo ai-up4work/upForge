@@ -17,12 +17,15 @@ export function SceneProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
   const [leaving, setLeaving] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const [bar, setBar] = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
 
   useEffect(() => {
+    clearTimers();
     setLeaving(false);
-    if (timer.current) clearTimeout(timer.current);
+    setWaiting(false);
     // the image strip lingers for a beat while the next scene builds, as in the reference
     const t = setTimeout(() => setBar(null), 380);
     return () => clearTimeout(t);
@@ -32,14 +35,19 @@ export function SceneProvider({ children }: { children: ReactNode }) {
     (href: string, img?: string) => {
       const url = new URL(href, window.location.href);
       if (url.pathname === pathname && !url.hash && url.search === window.location.search) return;
-      if (reduce) return router.push(href);
+      // same page, different filter (e.g. /work?service=…): no scene change, just go
+      if (reduce || url.pathname === pathname) return router.push(href);
+      clearTimers();
       router.prefetch(href);
       setLeaving(true);
       if (img) setBar(img);
-      timer.current = setTimeout(() => {
-        router.push(href);
-        window.scrollTo(0, 0);
-      }, 560);
+      // Start loading almost at once: the exit animation plays while the next page loads,
+      // instead of waiting for the animation and then for the page.
+      timers.current.push(setTimeout(() => { router.push(href); window.scrollTo(0, 0); }, 280));
+      // still loading after a moment: show that something is happening
+      timers.current.push(setTimeout(() => setWaiting(true), 1100));
+      // never leave a blank screen: fall back to a normal page load
+      timers.current.push(setTimeout(() => window.location.assign(href), 9000));
     },
     [pathname, reduce, router],
   );
@@ -47,11 +55,12 @@ export function SceneProvider({ children }: { children: ReactNode }) {
   return (
     <SceneCtx.Provider value={{ go, leaving }}>
       {children}
+      {waiting && !bar && <div className="scene-loading" aria-hidden="true" />}
       <AnimatePresence>
         {bar && (
           <motion.div
             key={bar}
-            className="scene-bar"
+            className={`scene-bar${waiting ? " is-waiting" : ""}`}
             aria-hidden="true"
             style={{ backgroundImage: `url("${bar}")` }}
             initial={{ scaleX: 0, opacity: 1 }}

@@ -8,6 +8,7 @@ import { CoverField, ImageListField } from "./MediaFields";
 import MarkdownEditor from "./MarkdownEditor";
 import { slugify } from "@/lib/format";
 import { services as SERVICES } from "@/lib/services";
+import { MARK_KEYS, MARKS, MarkSvg, autoMark } from "../ProjectGlyph";
 import type { PostDTO, ProjectDTO } from "@/lib/types";
 
 export type Kind = "projects" | "blog";
@@ -16,7 +17,7 @@ type Item = Partial<ProjectDTO & PostDTO>;
 type Form = {
   title: string; slug: string; description: string; image: string; images: string[]; content: string;
   tags: string; featured: boolean; order: number; publishedAt: string; readTime: string;
-  link: string; avatars: string; author: string; tag: string; services: string[];
+  link: string; avatars: string; author: string; tag: string; services: string[]; mark: string;
   metaTitle: string; metaDescription: string; ogImage: string;
 };
 
@@ -27,7 +28,7 @@ const toForm = (it?: Item): Form => ({
   featured: it?.featured ?? false, order: it?.order ?? 0,
   publishedAt: it?.publishedAt ? new Date(it.publishedAt).toISOString().slice(0, 10) : today(),
   readTime: it?.metadata?.readTime ?? "", link: it?.link ?? "", avatars: (it?.avatars ?? []).map((a) => a.src).join(", "),
-  author: it?.author ?? "", tag: it?.metadata?.tag ?? "", services: it?.services ?? [],
+  author: it?.author ?? "", tag: it?.metadata?.tag ?? "", services: it?.services ?? [], mark: it?.mark ?? "",
   metaTitle: it?.seo?.metaTitle ?? "", metaDescription: it?.seo?.metaDescription ?? "", ogImage: it?.seo?.ogImage ?? "",
 });
 
@@ -76,6 +77,7 @@ export default function Editor({ kind, item, mediaRoot, onClose, onSaved }: { ki
       payload.images = f.images;
       payload.link = f.link;
       payload.services = f.services;
+      payload.mark = f.mark;
       payload.avatars = f.avatars.split(",").map((s) => ({ src: s.trim() })).filter((a) => a.src);
     } else {
       payload.author = f.author;
@@ -168,6 +170,23 @@ export default function Editor({ kind, item, mediaRoot, onClose, onSaved }: { ki
               </Field>
             </div>
           </Section>
+
+          {kind === "projects" && (
+            <Section title="Card emblem" desc="The drawn mark shown on this project's card before its screenshot opens, and on the case study.">
+              <div className="a-marks" role="radiogroup" aria-label="Card emblem">
+                <button type="button" role="radio" aria-checked={!f.mark} className={`a-mark${!f.mark ? " on" : ""}`} onClick={() => set("mark", "")} title="Automatic">
+                  <MarkSvg name={autoMark({ title: f.title, slug: f.slug || "x", description: f.description, tags: f.tags.split(","), services: f.services })} className="a-mark-svg" />
+                  <span>Automatic</span>
+                </button>
+                {MARK_KEYS.map((k) => (
+                  <button type="button" role="radio" aria-checked={f.mark === k} key={k} className={`a-mark${f.mark === k ? " on" : ""}`} onClick={() => set("mark", k)} title={MARKS[k].label}>
+                    <MarkSvg name={k} className="a-mark-svg" />
+                    <span>{MARKS[k].label}</span>
+                  </button>
+                ))}
+              </div>
+            </Section>
+          )}
 
           {kind === "projects" && (
             <Section title="Services provided" desc="Tick what you delivered. The project then appears under that service on the site and in the work filters.">

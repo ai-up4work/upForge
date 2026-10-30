@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { Copy, ImagePlus, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { uploadImage, useConfirm, useToast } from "./ui";
 import type { GalleryImageDTO, ProjectDTO } from "@/lib/types";
-import { cloudinaryId } from "@/lib/format";
+import { cloudinaryId } from "@/lib/cloudinary-id";
 
 type Group = "all" | "gallery" | "projects" | "blog";
 

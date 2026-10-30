@@ -16,6 +16,7 @@ export type ProjectDTO = {
   link?: string;
   tags?: string[];
   services?: string[]; // service page slugs (lib/services.ts)
+  mark?: string; // card emblem (components/ProjectGlyph.tsx), empty = automatic
   content: string;
   metadata?: { readTime?: string; views?: number; likes?: number };
   seo?: { metaTitle?: string; metaDescription?: string; ogImage?: string };

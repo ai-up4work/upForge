@@ -34,6 +34,7 @@ interface IProject {
   link?: string;
   tags?: string[];
   services?: string[];
+  mark?: string;
   content: string;
   metadata?: {
     readTime?: string;
@@ -60,6 +61,7 @@ const ProjectSchema = new Schema<IProject>({
   link: { type: String },
   tags: [{ type: String }],
   services: [{ type: String }],
+  mark: { type: String, default: "" },
   content: { type: String, required: true },
   metadata: {
     readTime: { type: String },

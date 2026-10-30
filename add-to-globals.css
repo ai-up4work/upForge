@@ -1,0 +1,5 @@
+/* page change taking a while (slow network or first load in dev): a calm "working" signal */
+.scene-bar.is-waiting::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent); background-size: 40% 100%; background-repeat: no-repeat; animation: scene-shimmer 1.1s linear infinite; }
+.scene-loading { position: fixed; z-index: 70; left: 0; top: 0; height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--orange), var(--cyan), transparent); background-size: 40% 100%; background-repeat: no-repeat; animation: scene-shimmer 1.1s linear infinite; pointer-events: none; }
+@keyframes scene-shimmer { from { background-position: -40% 0; } to { background-position: 140% 0; } }
+@media (prefers-reduced-motion: reduce) { .scene-bar.is-waiting::after, .scene-loading { animation: none; } }

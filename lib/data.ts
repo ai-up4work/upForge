@@ -4,7 +4,8 @@ import { BlogPost, Project } from "./models";
 import { cloudinary, isCloudinaryConfigured, MEDIA_ROOT } from "./cloudinary";
 import { demoGallery, demoPosts, demoProjects } from "./demo";
 import type { GalleryImageDTO, PostDTO, ProjectDTO } from "./types";
-import { cld, cloudinaryId } from "./format";
+import { cld } from "./format";
+import { cloudinaryId } from "./cloudinary-id";
 
 /** Server-side reads used by pages. Falls back to demo content only when no database is configured. */
 

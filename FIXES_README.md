@@ -1,19 +1,26 @@
-# Two fixes
+# Fixes: emblems, home cards, hanging clicks, errors
 
-## 1. Hero covered by a project screenshot
-The "Products we've shipped" cards needed styles that had to be pasted into globals.css.
-Now the component brings its own styles.
+## Do these first (they fix the errors in your terminal)
+1. **Delete `public/icon.svg`.** The icon now lives at `app/icon.svg`; two files for one address made Next.js fail (the icon.svg 500).
+2. **Add `lib/cloudinary-id.ts`** (new) and replace `lib/data.ts`. This fixes "'cloudinaryId' is not exported from './format'".
+   If you pasted `cloudinaryId` into `lib/format.ts` earlier you can leave it or remove it.
 
-- Add `components/FeaturedCards.css` (new)
-- Replace `components/FeaturedCards.tsx` and `components/WorkStrip.tsx`
-- If you pasted the "Home: selected work" block into `app/globals.css`, you can delete it (harmless if left).
+## Clicking a project sometimes hangs
+- Replace `components/Scene.tsx`. Pages now start loading straight away, a moving shimmer shows while a slow page loads,
+  and after 9 seconds it falls back to a normal page load, so you never sit on a blank screen.
+  (Very slow first clicks in `npm run dev` are the dev server compiling the page; the live site is much faster.)
+- Append `add-to-globals.css` to the end of `app/globals.css`.
 
-## 2. Filter the admin Gallery by project
-A "Project" dropdown next to All / Gallery / Projects / Journal. Each image also shows its project's name.
-An image counts for a project if the project uses it (cover, screens or logo) or it was uploaded in that project's folder.
-The public /gallery page's project filter uses the same matching now.
+## Choose each project's card emblem in the admin
+- Replace `components/ProjectGlyph.tsx` (14 emblems; team avatars are no longer used as logos).
+- Replace `components/admin/Editor.tsx` (new "Card emblem" picker; "Automatic" is the default).
+- In `lib/types.ts` add to `ProjectDTO`: `mark?: string;`
+- In `lib/models.ts` add `mark?: string;` to `IProject` and `mark: { type: String, default: "" },` to `ProjectSchema`.
+- Replace `components/ProjectScene.tsx` (the case-study badge uses the emblem, not the team avatar).
+- Append `add-to-admin.css` to the end of `app/admin/admin.css` (emblem picker + gallery project filter styles).
 
-- Replace `components/admin/GalleryManager.tsx`
-- Replace `lib/data.ts` (or, if yours differs, copy the `getGalleryWithProjects` function)
-- Append `add-to-lib-format.ts` to the end of `lib/format.ts`
-- Append `add-to-admin.css` to the end of `app/admin/admin.css`
+## Home "Products we've shipped": closed until hover
+- Replace `components/FeaturedCards.tsx` (and keep `components/FeaturedCards.css`).
+
+## Admin gallery project filter (from before)
+- Replace `components/admin/GalleryManager.tsx`.
