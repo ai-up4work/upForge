@@ -1,0 +1,29 @@
+/* ───────── Home: selected work (desktop row of cards, Work-page style) ───────── */
+.ws-desktop { display: none; }
+@media (min-width: 900px) { .ws-desktop { display: block; } .ws-mobile { display: none; } }
+.fc-frame { position: relative; padding: 46px 0; }
+.fc-frame::before { content: ""; position: absolute; inset: 0 5%; border: 1.5px solid var(--line-2); pointer-events: none; }
+.fc-row { position: relative; list-style: none; margin: 0; padding: 0; display: flex; gap: 17px; align-items: flex-start; height: clamp(500px, 40vw, 600px); }
+.fc-card { position: relative; flex: 1 1 0; min-width: 0; height: 74%; transition: flex-grow .85s var(--ease), height .75s var(--ease); }
+.fc-card.is-on { flex-grow: 2.15; height: 100%; }
+.fc-hit { position: absolute; inset: 0; display: block; background: var(--card); border: 1.5px solid var(--line); overflow: hidden; transition: background .5s, border-color .5s; }
+.fc-card.is-on .fc-hit { background: var(--card-on); border-color: #252c58; }
+.fc-hit .wcard-marker { top: 26px; }
+.fc-media { position: absolute; left: 14px; right: 14px; top: 14px; aspect-ratio: 16 / 10; overflow: hidden; background: #0a1030; clip-path: inset(0 0 100% 0); transition: clip-path .9s var(--ease) .1s; }
+.fc-media .show { transform: scale(1.08); transition: transform 1.3s var(--ease) .1s; }
+.fc-card.is-on .fc-media { clip-path: inset(0 0 0 0); }
+.fc-card.is-on .fc-media .show { transform: none; }
+.fc-glyph { position: absolute; left: 0; right: 0; top: 18%; display: grid; place-items: center; color: var(--lav); transition: opacity .4s, transform .6s var(--ease); }
+.fc-glyph .glyph-mark, .fc-glyph .glyph-logo { width: clamp(70px, 6.5vw, 100px); height: clamp(70px, 6.5vw, 100px); }
+.fc-glyph .glyph-img { display: grid; place-items: center; width: clamp(70px, 6.5vw, 100px); height: clamp(70px, 6.5vw, 100px); border-radius: 22%; overflow: hidden; }
+.fc-glyph .glyph-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.fc-card.is-on .fc-glyph, .fc-card.is-on .wcard-marker { opacity: 0; transform: scale(.85); }
+.fc-text { position: absolute; left: 16px; right: 16px; bottom: 34px; display: grid; justify-items: center; gap: 12px; text-align: center; }
+.fc-title { font-weight: 600; font-size: .78rem; line-height: 1.6; letter-spacing: .26em; margin-right: -.26em; text-transform: uppercase; color: var(--white); text-wrap: balance;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.fc-kind { font-size: .8rem; color: var(--lav-2); max-height: 0; opacity: 0; transition: opacity .5s .25s; }
+.fc-card.is-on .fc-kind { max-height: 3em; opacity: 1; }
+.fc-text .wcard-num { font-size: .85rem; }
+.fc-card.is-on .wcard-num { color: var(--cyan); }
+.fc-card.is-on .wcard-bar { width: 128px; background: var(--cyan); }
+@media (prefers-reduced-motion: reduce) { .fc-card, .fc-media, .fc-media .show, .fc-glyph { transition: none; } }

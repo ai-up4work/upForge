@@ -1,8 +1,9 @@
 import type { ProjectDTO } from "@/lib/types";
+import { cld } from "@/lib/format";
 
 /**
  * The lavender emblem on a project card, as in the reference: the project's own logo (first avatar,
- * tinted to the card colour) or, when none is uploaded, a geometric mark picked from the project.
+ * tinted to the card colour; or the plain image with `asImage`) or, when none is uploaded, a geometric mark picked from the project.
  */
 const MARKS: Record<string, React.ReactNode> = {
   // nested arcs, like a stylised D / crescent
@@ -69,8 +70,13 @@ function markFor(p: ProjectDTO) {
   return KEYS[h % KEYS.length];
 }
 
-export default function ProjectGlyph({ p }: { p: ProjectDTO }) {
+export default function ProjectGlyph({ p, asImage = false }: { p: ProjectDTO; asImage?: boolean }) {
   const logo = p.avatars?.[0]?.src;
+  if (logo && asImage) {
+    // the real logo image (used by the home "Products we've shipped" cards)
+    // eslint-disable-next-line @next/next/no-img-element
+    return <span className="glyph glyph-img" aria-hidden="true"><img src={cld(logo, 300)} alt="" loading="lazy" decoding="async" /></span>;
+  }
   if (logo) {
     return <span className="glyph glyph-logo" style={{ WebkitMaskImage: `url("${logo}")`, maskImage: `url("${logo}")` }} aria-hidden="true" />;
   }
