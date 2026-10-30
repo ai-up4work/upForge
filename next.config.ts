@@ -24,8 +24,6 @@ const nextConfig: NextConfig = {
         ],
       },
       { source: "/admin", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
-      { source: "/lab/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
-      { source: "/lab", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
     ];
   },
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import Orb from "./Orb";
+import AiCore from "./AiCore";
 import { SceneLink } from "./Scene";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -23,11 +23,10 @@ export default function Hero({ label, title, sub }: { label: string; title: stri
 
   return (
     <section className="hero" aria-label="Upforge">
+      <AiCore />
       <motion.div className="hero-dim" initial={reduce ? false : { opacity: 1 }} animate={{ opacity: 0 }} transition={{ duration: 1.6, ease }} aria-hidden="true" />
       <div className="hero-floor" aria-hidden="true" />
       <div className="stage hero-stage">
-        <Orb />
-
         <motion.div className="hero-index" {...fade(1.1, 0)}>
           <SceneLink href="/work" aria-label="Next: Work">
             <span>01</span>
