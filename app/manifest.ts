@@ -7,11 +7,15 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Websites, apps, business software and AI tools built in Colombo, Sri Lanka.",
     start_url: "/",
     display: "standalone",
+    lang: "en-LK",
+    categories: ["business", "productivity", "developer"],
     background_color: "#00041c",
     theme_color: "#00041c",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
-      { src: "/apple-icon", sizes: "180x180", type: "image/png" },
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

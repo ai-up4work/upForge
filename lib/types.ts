@@ -15,6 +15,7 @@ export type ProjectDTO = {
   order: number;
   link?: string;
   tags?: string[];
+  services?: string[]; // service page slugs (lib/services.ts)
   content: string;
   metadata?: { readTime?: string; views?: number; likes?: number };
   seo?: { metaTitle?: string; metaDescription?: string; ogImage?: string };
@@ -47,4 +48,5 @@ export type GalleryImageDTO = {
   height: number;
   format?: string;
   createdAt?: string;
+  project?: { slug: string; title: string };
 };

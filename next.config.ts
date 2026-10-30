@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   serverExternalPackages: ["mongoose", "cloudinary"],
+  // fonts read from disk by the social-share image routes
+  outputFileTracingIncludes: { "/**/opengraph-image*": ["./lib/og-fonts/**", "./public/images/**"], "/**/twitter-image*": ["./lib/og-fonts/**", "./public/images/**"] },
   async headers() {
     return [
       {

@@ -169,3 +169,13 @@ export const homeFaqs = [
   { q: "How much does a software project cost in Sri Lanka?", a: "Every project is different, so we give a fixed quote after a short discovery call. The quote covers design, development, testing and launch, with no surprise costs." },
   { q: "How do I start a project with Upforge?", a: "Send a short brief through the contact page or email us. We reply within one working day and book a 30-minute call." },
 ];
+
+/** Services a project used: the ones ticked in the admin, or (for older projects) matched from its tags. */
+export function servicesOf(p: { services?: string[]; tags?: string[] }): ServicePage[] {
+  if (p.services?.length) return services.filter((s) => p.services!.includes(s.slug));
+  const tags = (p.tags ?? []).map((t) => t.toLowerCase());
+  return services.filter((s) => s.matchTags.some((m) => tags.includes(m.toLowerCase())));
+}
+
+/** Short label for chips and filters. */
+export const serviceLabel = (s: ServicePage) => s.name;

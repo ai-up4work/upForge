@@ -21,9 +21,11 @@ export const metadata: Metadata = {
   publisher: "Upforge Studio",
   category: "technology",
   keywords: [
-    "software company Sri Lanka", "software development company Sri Lanka", "web development company Sri Lanka",
-    "web development Colombo", "mobile app development Sri Lanka", "custom software development Sri Lanka",
-    "ecommerce website development Sri Lanka", "AI development Sri Lanka", "UI UX design Sri Lanka", "Up4Work", "Upforge",
+    "software company Sri Lanka", "best software company in Sri Lanka", "software development company Sri Lanka", "software companies in Colombo",
+    "IT company Sri Lanka", "web development company Sri Lanka", "web design Sri Lanka", "website development Colombo",
+    "mobile app development Sri Lanka", "app developers Sri Lanka", "custom software development Sri Lanka", "POS system Sri Lanka",
+    "ecommerce website development Sri Lanka", "AI development company Sri Lanka", "AI chatbot Sri Lanka", "AI automation Sri Lanka",
+    "UI UX design agency Sri Lanka", "Next.js developers Sri Lanka", "software outsourcing Sri Lanka", "Upforge", "Up4Work",
   ],
   alternates: { canonical: "/", languages: { "en-LK": "/", "x-default": "/" }, types: { "application/rss+xml": "/api/rss" } },
   openGraph: {
@@ -32,7 +34,6 @@ export const metadata: Metadata = {
     description: site.description,
   },
   twitter: { card: "summary_large_image", title: "Upforge Studio | Software Development Company in Sri Lanka", description: site.description },
-  icons: { icon: "/icon.svg", apple: "/apple-icon" },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   verification: {
     ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : {}),

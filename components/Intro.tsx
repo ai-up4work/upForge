@@ -27,9 +27,9 @@ export default function Intro() {
           __html: `try{if(!sessionStorage.getItem("${KEY}")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("uf-intro")}catch(e){}`,
         }}
       />
-      <div className="intro" aria-hidden="true">
-        <div className="intro-inner">
-          <svg viewBox="0 0 64 64" className="intro-mark">
+      <div className="uf-loader" aria-hidden="true">
+        <div className="uf-loader-inner">
+          <svg viewBox="0 0 64 64" className="uf-loader-mark">
             <defs>
               <linearGradient id="intro-steel" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stopColor="#E3EFFB" />
@@ -37,14 +37,14 @@ export default function Intro() {
                 <stop offset="1" stopColor="#6F95C2" />
               </linearGradient>
             </defs>
-            <path className="intro-fill" d={U} fill="url(#intro-steel)" />
-            <path className="intro-line" d={U} pathLength={1} />
-            <path className="intro-ember" d={EMBER} />
+            <path className="uf-loader-fill" d={U} fill="url(#intro-steel)" />
+            <path className="uf-loader-line" d={U} pathLength={1} />
+            <path className="uf-loader-ember" d={EMBER} />
           </svg>
-          <p className="intro-word">
+          <p className="uf-loader-word">
             {"UPFORGE".split("").map((c, i) => <span key={i} style={{ ["--i" as string]: i }}>{c}</span>)}
           </p>
-          <p className="intro-sub">Studio · Sri Lanka</p>
+          <p className="uf-loader-sub">Studio · Sri Lanka</p>
         </div>
       </div>
     </>

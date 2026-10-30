@@ -23,12 +23,11 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getPost(decodeURIComponent((await params).slug));
   if (!p) return { title: "Article not found" };
-  const image = p.seo?.ogImage || p.image;
   return {
     title: p.seo?.metaTitle || p.title,
     description: p.seo?.metaDescription || p.description,
     alternates: { canonical: `/blog/${p.slug}` },
-    openGraph: { title: p.title, description: p.description, images: image ? [image] : undefined, type: "article", publishedTime: p.publishedAt, modifiedTime: p.updatedAt, authors: [p.author || "Upforge Studio"] },
+    openGraph: { title: p.title, description: p.description, type: "article", publishedTime: p.publishedAt, modifiedTime: p.updatedAt, authors: [p.author || "Upforge Studio"] },
   };
 }
 

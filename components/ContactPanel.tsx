@@ -6,6 +6,7 @@ import { LogoMark } from "./Logo";
 import { SceneLink } from "./Scene";
 import { useColomboTime } from "./bits";
 import { site } from "@/lib/content";
+import { services } from "@/lib/services";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -46,6 +47,16 @@ export default function ContactPanel({ title = ["Let's build", "something", "rem
         </div>
         <div className="cpanel-right">
           <p className="cpanel-lead">Tell us what you&apos;re building. You&apos;ll hear back within one working day with next steps and a rough timeline.</p>
+          <ol className="cpanel-steps">
+            <li><b>01</b><span>Reply within one working day</span></li>
+            <li><b>02</b><span>A 30-minute call to understand the goal</span></li>
+            <li><b>03</b><span>A fixed quote and timeline in writing</span></li>
+          </ol>
+          <div className="cpanel-needs" aria-label="What do you need?">
+            {services.map((s) => (
+              <SceneLink key={s.slug} href={`/contact?need=${encodeURIComponent(s.need)}`} className="svc-chip">{s.name}</SceneLink>
+            ))}
+          </div>
           <SceneLink href="/contact" className="btn-line">
             <span>Start a project</span>
             <span aria-hidden="true">→</span>

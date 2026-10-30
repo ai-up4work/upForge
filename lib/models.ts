@@ -33,6 +33,7 @@ interface IProject {
   order: number;
   link?: string;
   tags?: string[];
+  services?: string[];
   content: string;
   metadata?: {
     readTime?: string;
@@ -58,6 +59,7 @@ const ProjectSchema = new Schema<IProject>({
   order: { type: Number, default: 0 },
   link: { type: String },
   tags: [{ type: String }],
+  services: [{ type: String }],
   content: { type: String, required: true },
   metadata: {
     readTime: { type: String },

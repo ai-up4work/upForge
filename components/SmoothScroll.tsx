@@ -9,7 +9,7 @@ export default function SmoothScroll() {
   const pathname = usePathname();
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4), anchors: { offset: -72 } });
+    const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, smoothWheel: true, anchors: { offset: -72 } });
     let id = requestAnimationFrame(function raf(t) {
       lenis.raf(t);
       id = requestAnimationFrame(raf);

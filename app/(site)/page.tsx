@@ -6,6 +6,7 @@ import Faq from "@/components/Faq";
 import ContactPanel from "@/components/ContactPanel";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
+import { LogoMark } from "@/components/Logo";
 import { SceneLink } from "@/components/Scene";
 import { hero, steps } from "@/lib/content";
 import { homeFaqs, services } from "@/lib/services";
@@ -16,8 +17,9 @@ import { formatDate, readTime } from "@/lib/format";
 export const revalidate = 300;
 
 export default async function Home() {
-  const [featured, posts] = await Promise.all([getProjects({ featured: true }), getPosts({ limit: 3 })]);
-  const projects = featured.length ? featured : await getProjects({ limit: 4 });
+  const [all, posts] = await Promise.all([getProjects(), getPosts({ limit: 3 })]);
+  const featured = all.filter((p) => p.featured);
+  const projects = featured.length ? featured.slice(0, 4) : all.slice(0, 4);
 
   return (
     <>
@@ -25,6 +27,7 @@ export default async function Home() {
       <Hero label={hero.label} title={hero.title} sub={hero.sub} />
 
       <section className="section home-intro" id="studio">
+        <span className="home-intro-topo" aria-hidden="true" />
         <Reveal className="home-intro-inner">
           <p className="tracked">Software development company · Sri Lanka</p>
           <h2 className="serif-lg">We design and build software <span className="teal">people love to use</span></h2>
@@ -38,12 +41,24 @@ export default async function Home() {
             <SceneLink href="/work" className="tracked link-under">See the work</SceneLink>
           </div>
         </Reveal>
+        <Reveal className="studio-card" delay={0.15}>
+          <span className="studio-card-topo" aria-hidden="true" />
+          <span className="studio-card-emblem" aria-hidden="true"><LogoMark /></span>
+          <dl className="studio-facts">
+            <div><dt>{String(all.length).padStart(2, "0")}</dt><dd>Products shipped, shown in our work</dd></div>
+            <div><dt>1<small>day</small></dt><dd>Reply time on every new enquiry</dd></div>
+            <div><dt>Weekly</dt><dd>Live demos you can click and test</dd></div>
+            <div><dt>100<small>%</small></dt><dd>Of the code and designs are yours</dd></div>
+          </dl>
+          <ul className="studio-svcs" role="list">
+            {services.map((s) => <li key={s.slug}><SceneLink href={`/services/${s.slug}`}>{s.name}</SceneLink></li>)}
+          </ul>
+        </Reveal>
       </section>
 
       <section className="section">
         <div className="section-head"><p className="tracked">Selected work</p><h2 className="serif-md">Products we&apos;ve shipped</h2></div>
         <WorkStrip projects={projects} />
-        <p className="swipe-hint" aria-hidden="true">Swipe <i /></p>
         <div className="center-link"><SceneLink href="/work" className="tracked link-under">View all projects →</SceneLink></div>
       </section>
 
@@ -81,8 +96,13 @@ export default async function Home() {
         </section>
       )}
 
-      <section className="section">
-        <div className="section-head"><p className="tracked">Questions</p><h2 className="serif-md">Frequently asked</h2></div>
+      <section className="section faq-split">
+        <div className="section-head">
+          <p className="tracked">Questions</p>
+          <h2 className="serif-md">Frequently asked</h2>
+          <p className="faq-side">Straight answers about cost, timelines and how we work. Anything else, ask us directly.</p>
+          <SceneLink href="/contact" className="tracked link-under">Ask a question →</SceneLink>
+        </div>
         <Faq items={homeFaqs} />
       </section>
 

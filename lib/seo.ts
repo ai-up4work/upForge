@@ -14,8 +14,8 @@ export const organization = () => ({
   alternateName: ["Upforge", "Up4Work"],
   description: site.description,
   url: abs("/"),
-  logo: abs("/icon.svg"),
-  image: abs("/images/og/home.jpg"),
+  logo: { "@type": "ImageObject", url: abs("/brand/upforge-logo-512.png"), width: 512, height: 512 },
+  image: abs("/brand/upforge-lockup.png"),
   email: site.email,
   ...(site.phone ? { telephone: site.phone } : {}),
   address: {

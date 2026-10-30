@@ -36,6 +36,33 @@ Copy for every service lives in `lib/services.ts`. Change the wording there, not
 - Internal links: footer links to every service page using its keyword as the anchor text; related services and projects cross-link.
 - Mobile-first layouts (most visitors in Sri Lanka browse on phones).
 
+## Where the SEO files are
+
+| What | File | Live URL |
+| --- | --- | --- |
+| Favicon (16/32/48, all browsers) | `app/favicon.ico` | `/favicon.ico` |
+| Vector icon (modern browsers) | `app/icon.svg` | `/icon.svg` |
+| Apple touch icon (iPhone home screen) | `app/apple-icon.tsx` | `/apple-icon` |
+| Android / install icons 192, 512, maskable | `public/icons/` | `/icons/icon-512.png` |
+| Web app manifest | `app/manifest.ts` | `/manifest.webmanifest` |
+| Logo for Google (Organization schema) | `public/brand/upforge-logo-512.png` | |
+| Share image, default | `app/opengraph-image.tsx` | `/opengraph-image` |
+| Share image per project (cover + title) | `app/(site)/work/[slug]/opengraph-image.tsx` | automatic |
+| Share image per service | `app/(site)/services/[slug]/opengraph-image.tsx` | automatic |
+| Share image per article | `app/(site)/blog/[slug]/opengraph-image.tsx` | automatic |
+| Keywords, titles, descriptions | `app/layout.tsx`, each page's `metadata`, `lib/services.ts` | |
+| Structured data (JSON-LD) | `lib/seo.ts` | |
+| Sitemap / robots | `app/sitemap.ts`, `app/robots.ts` | `/sitemap.xml`, `/robots.txt` |
+| AI assistant summary | `app/llms.txt/route.ts` | `/llms.txt` |
+
+macOS `.icns` files are for desktop apps, not websites; browsers on Mac use the favicon, SVG icon and Apple touch icon above.
+
+## AI search (ChatGPT, Perplexity, Gemini, Claude, Copilot)
+
+- `robots.txt` explicitly allows the AI crawlers (GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Google-Extended and others).
+- `/llms.txt` gives AI assistants a clean summary: who you are, services, every project, every article, contact.
+- AI answers about "best software companies in Sri Lanka" lean heavily on directories (Clutch, GoodFirms, DesignRush) and Google reviews. The directory and review steps below matter as much for AI answers as for Google.
+
 ## Do these in the first week (essential)
 
 1. **Set the environment variables** in `.env.local` / Vercel:

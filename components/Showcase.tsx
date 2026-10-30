@@ -42,6 +42,7 @@ export default function Showcase({
   sizes = "(min-width: 900px) 40vw, 92vw",
   priority,
   single = false,
+  flat = false,
 }: {
   slug: string;
   title: string;
@@ -52,12 +53,13 @@ export default function Showcase({
   sizes?: string;
   priority?: boolean;
   single?: boolean;
+  flat?: boolean;
 }) {
   const pal = paletteFor(slug);
   const style = { ["--pa" as string]: pal.a, ["--pb" as string]: pal.b, ["--pc" as string]: pal.c };
-  const back = !single ? secondary : undefined;
+  const back = !single && !flat ? secondary : undefined;
   return (
-    <span className={`show${single ? " show-single" : back ? "" : " show-solo"}`} style={style} aria-hidden={label ? undefined : true}>
+    <span className={`show${flat ? " show-flat" : single ? " show-single" : back ? "" : " show-solo"}`} style={style} aria-hidden={label ? undefined : true}>
       <span className="show-plate" />
       <span className="show-grid" />
       {back && (

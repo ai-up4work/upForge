@@ -1,36 +1,56 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import ProjectGlyph from "./ProjectGlyph";
+import ProjectTile from "./ProjectTile";
+import Showcase from "./Showcase";
 import { SceneLink, useScene } from "./Scene";
+import { services, servicesOf } from "@/lib/services";
 import { cld } from "@/lib/format";
 import type { ProjectDTO } from "@/lib/types";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-const CARD = 375; // design units (1600 × 1200 stage)
+// Stage is 1600 × 1200 design units. Four cards always span the same total width:
+// four equal cards before one opens, then one wide (landscape screenshot) card and three narrow ones.
+const ROW = 1551;
 const GAP = 17;
+const OPEN = 600;
 const VISIBLE = 4;
 
 const pad = (n: number) => String(n).padStart(2, "0");
-const splitTitle = (t: string) => {
-  const words = t.trim().split(/\s+/);
-  if (words.length < 2) return [t, ""];
-  return [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")];
-};
 
-/** Scene 02: the work index as a row of cards. Hover, scroll or use ← → to change the active card. */
-export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
+/** Scene 02: the work index. Hover, scroll or use ← → to open a card; filter by service. */
+export default function WorkScene({ projects: all }: { projects: ProjectDTO[] }) {
   const reduce = useReducedMotion();
   const { go } = useScene();
+  const [svc, setSvc] = useState("");
   const [active, setActive] = useState(-1);
   const [start, setStart] = useState(0);
   const lock = useRef(0);
+  const hoverT = useRef<number | undefined>(undefined);
+
+  // ?service=… preselects a filter (links from service pages and case studies)
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("service");
+    if (q && services.some((s) => s.slug === q)) setSvc(q);
+  }, []);
+
+  const projects = useMemo(() => (svc ? all.filter((p) => servicesOf(p).some((s) => s.slug === svc)) : all), [all, svc]);
+  const chips = useMemo(() => services.filter((s) => all.some((p) => servicesOf(p).some((x) => x.slug === s.slug))), [all]);
   const n = projects.length;
   const windowed = useMemo(() => projects.slice(start, start + VISIBLE), [projects, start]);
 
-  // After the cards land, open the first one (as in the reference sequence).
+  const pick = (slug: string) => {
+    setSvc(slug);
+    setStart(0);
+    setActive(0);
+    const url = new URL(window.location.href);
+    if (slug) url.searchParams.set("service", slug);
+    else url.searchParams.delete("service");
+    window.history.replaceState(null, "", url);
+  };
+
   useEffect(() => {
     const t = setTimeout(() => setActive((a) => (a === -1 ? 0 : a)), reduce ? 0 : 1250);
     return () => clearTimeout(t);
@@ -72,7 +92,18 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
     };
   }, [active, go, projects, select]);
 
-  if (!n) {
+  const filters = chips.length > 1 && (
+    <nav className="work-filters" aria-label="Filter projects by service">
+      <button type="button" className={!svc ? "on" : undefined} onClick={() => pick("")}>All <sup>{all.length}</sup></button>
+      {chips.map((s) => (
+        <button type="button" key={s.slug} className={svc === s.slug ? "on" : undefined} onClick={() => pick(s.slug)}>
+          {s.name} <sup>{all.filter((p) => servicesOf(p).some((x) => x.slug === s.slug)).length}</sup>
+        </button>
+      ))}
+    </nav>
+  );
+
+  if (!all.length) {
     return (
       <section className="work-scene">
         <div className="stage empty-stage">
@@ -84,14 +115,20 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
   }
 
   const count = windowed.length;
-  const rowW = count * CARD + (count - 1) * GAP;
-  const left0 = (1600 - rowW) / 2;
   const activeLocal = active - start;
-  const ax = activeLocal >= 0 && activeLocal < count ? left0 + activeLocal * (CARD + GAP) + CARD / 2 : 800;
+  const hasOpen = activeLocal >= 0 && activeLocal < count;
+  const narrow = count > 1 ? (ROW - OPEN - GAP * (VISIBLE - 1)) / (VISIBLE - 1) : OPEN;
+  const even = (ROW - GAP * (VISIBLE - 1)) / VISIBLE;
+  const widths = windowed.map((_, k) => (hasOpen ? (k === activeLocal ? OPEN : narrow) : even));
+  const rowW = widths.reduce((a, b) => a + b, 0) + GAP * (count - 1);
+  const lefts: number[] = [];
+  widths.reduce((x, w) => (lefts.push(x), x + w + GAP), (1600 - rowW) / 2);
+  const ax = hasOpen ? lefts[activeLocal] + widths[activeLocal] / 2 : 800;
 
   return (
     <section className="work-scene" aria-label="Selected work">
       <div className="stage work-stage" style={{ ["--ax" as string]: ax }}>
+        {filters}
         <motion.div
           className="work-frame"
           initial={reduce ? false : { opacity: 0, scaleX: 0.7 }}
@@ -102,45 +139,37 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
           <span className="work-frame-topo" />
         </motion.div>
 
-        <ul className="work-cards" role="list">
+        <ul className="work-cards" role="list" key={svc || "all"}>
           {windowed.map((p, k) => {
             const i = start + k;
             const on = i === active;
-            const [a, b] = splitTitle(p.title.toUpperCase());
             const cover = p.image || p.images?.[0];
+            const kind = servicesOf(p).slice(0, 2).map((s) => s.name).join(" · ") || (p.tags ?? []).slice(0, 2).join(" · ");
             return (
               <motion.li
                 key={p.slug}
                 className={`wcard${on ? " is-active" : ""}`}
-                style={{ left: `calc(${left0 + k * (CARD + GAP)} * var(--s))` }}
+                style={{ left: `calc(${lefts[k]} * var(--s))`, width: `calc(${widths[k]} * var(--s))` }}
                 initial={reduce ? false : { opacity: 0, x: "70%", y: "-42%", scale: 0.42 }}
                 animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
                 transition={{ duration: 1.05, ease, delay: 0.08 + k * 0.07 }}
-                onMouseEnter={() => window.matchMedia("(hover: hover)").matches && setActive(i)}
+                onPointerMove={() => {
+                  if (on || !window.matchMedia("(hover: hover)").matches) return;
+                  window.clearTimeout(hoverT.current);
+                  hoverT.current = window.setTimeout(() => setActive(i), 110);
+                }}
+                onPointerLeave={() => window.clearTimeout(hoverT.current)}
               >
-                <SceneLink
-                  href={`/work/${p.slug}`}
-                  className="wcard-hit"
-                  onFocus={() => setActive(i)}
-                  onClick={(e) => {
-                    if (!on && !window.matchMedia("(hover: hover)").matches) {
-                      e.preventDefault();
-                      setActive(i);
-                    }
-                  }}
-                  aria-label={`${p.title}, project ${pad(i + 1)}. Open case study`}
-                >
+                <SceneLink href={`/work/${p.slug}`} bar={cld(cover, 900)} className="wcard-hit" onFocus={() => setActive(i)} aria-label={`${p.title}, project ${pad(i + 1)}. Open case study`}>
                   <span className="wcard-marker" aria-hidden="true" />
                   <span className="wcard-media" aria-hidden="true">
-                    {cover && <Image src={cld(cover, 900)} alt="" fill sizes="(min-width: 900px) 24vw, 90vw" style={{ objectFit: "cover" }} priority />}
+                    <Showcase flat slug={p.slug} title={p.title} image={cover} link={p.link} sizes="(min-width: 900px) 40vw, 90vw" priority={k < 2} />
                   </span>
                   <span className="wcard-glyph"><ProjectGlyph p={p} /></span>
                   <span className="wcard-dot" aria-hidden="true" />
                   <span className="wcard-text">
-                    <span className="wcard-title">
-                      {a}
-                      {b && <em> {b}</em>}
-                    </span>
+                    <span className="wcard-title">{p.title}</span>
+                    <span className="wcard-kind">{kind}</span>
                     <span className="wcard-num">{pad(i + 1)}</span>
                   </span>
                   <span className="wcard-bar" aria-hidden="true" />
@@ -164,23 +193,13 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
         </motion.div>
       </div>
 
-      {/* Phones: a vertical stack of open cards */}
-      <ul className="work-list" role="list">
-        {projects.map((p, i) => {
-          const [a, b] = splitTitle(p.title.toUpperCase());
-          const cover = p.image || p.images?.[0];
-          return (
-            <motion.li key={p.slug} initial={reduce ? false : { opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease }}>
-              <SceneLink href={`/work/${p.slug}`} className="wcard-m">
-                <span className="wcard-m-media">{cover && <Image src={cld(cover, 900)} alt="" fill sizes="92vw" style={{ objectFit: "cover" }} />}</span>
-                <span className="wcard-title">{a}{b && <em> {b}</em>}</span>
-                <span className="wcard-num">{pad(i + 1)}</span>
-                <span className="wcard-bar" aria-hidden="true" />
-              </SceneLink>
-            </motion.li>
-          );
-        })}
-      </ul>
+      {/* Phones: landscape cards; each opens while it is centred on screen */}
+      <div className="work-mobile">
+        {filters}
+        <ul className="ptile-grid work-list" role="list" key={svc || "all"}>
+          {projects.map((p, i) => <ProjectTile key={p.slug} p={p} index={i} sizes="92vw" />)}
+        </ul>
+      </div>
     </section>
   );
 }

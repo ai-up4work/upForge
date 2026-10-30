@@ -34,6 +34,7 @@ export const demoProjects: ProjectDTO[] = [
     order: 0,
     link: "https://alzia.vercel.app",
     tags: ["E-commerce", "Web app", "Next.js"],
+    services: ["ecommerce-website-development-sri-lanka", "web-development-sri-lanka", "ui-ux-design-sri-lanka"],
     content: md("Alzia"),
     metadata: { readTime: "4 min read", views: 0 },
   },
@@ -47,6 +48,7 @@ export const demoProjects: ProjectDTO[] = [
     featured: true,
     order: 1,
     tags: ["E-commerce", "Quotations"],
+    services: ["ecommerce-website-development-sri-lanka", "web-development-sri-lanka"],
     content: md("This storefront"),
   },
   {
@@ -59,6 +61,7 @@ export const demoProjects: ProjectDTO[] = [
     featured: true,
     order: 2,
     tags: ["Digital signage", "Real-time"],
+    services: ["custom-software-development-sri-lanka", "web-development-sri-lanka"],
     content: md("This display"),
   },
   {
@@ -71,6 +74,7 @@ export const demoProjects: ProjectDTO[] = [
     featured: false,
     order: 3,
     tags: ["Business software", "Dashboard"],
+    services: ["custom-software-development-sri-lanka", "ai-development-sri-lanka", "ui-ux-design-sri-lanka"],
     content: md("This business management system"),
   },
 ];

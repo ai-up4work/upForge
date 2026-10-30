@@ -12,6 +12,7 @@ import { ReadingProgress, Share, ViewPing } from "@/components/ArticleTools";
 import { getProject, getProjects } from "@/lib/data";
 import { formatDate, readTime } from "@/lib/format";
 import { site } from "@/lib/content";
+import { servicesOf } from "@/lib/services";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbs, projectSchema } from "@/lib/seo";
 
@@ -25,12 +26,11 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProject(decodeURIComponent((await params).slug));
   if (!p) return { title: "Project not found" };
-  const image = p.seo?.ogImage || p.image;
   return {
-    title: p.seo?.metaTitle || `${p.title}: ${(p.tags ?? [])[0] ? `${p.tags![0]} Case Study` : "Case Study"}`,
+    title: p.seo?.metaTitle || `${p.title}: ${servicesOf(p)[0]?.name ?? (p.tags ?? [])[0] ?? "Software"} Project in Sri Lanka`,
     description: p.seo?.metaDescription || p.description,
     alternates: { canonical: `/work/${p.slug}` },
-    openGraph: { title: p.seo?.metaTitle || p.title, description: p.seo?.metaDescription || p.description, images: image ? [image] : undefined, type: "article" },
+    openGraph: { title: p.seo?.metaTitle || p.title, description: p.seo?.metaDescription || p.description, type: "article" },
   };
 }
 
@@ -44,7 +44,8 @@ export default async function ProjectPage({ params }: Props) {
   const idx = all.findIndex((x) => x.slug === p.slug);
   const next = all.length > 1 ? all[(idx + 1) % all.length] : null;
   const year = new Date(p.publishedAt).getFullYear();
-  const kicker = [...(p.tags ?? []).slice(0, 1), String(year)].join(" · ");
+  const svcs = servicesOf(p);
+  const kicker = [svcs[0]?.name ?? (p.tags ?? [])[0], String(year)].filter(Boolean).join(" · ");
 
   return (
     <article className="page">
@@ -58,6 +59,14 @@ export default async function ProjectPage({ params }: Props) {
           <dl>
             <div><dt className="tracked">Year</dt><dd>{year}</dd></div>
             {p.tags?.length ? <div><dt className="tracked">Scope</dt><dd>{p.tags.join(", ")}</dd></div> : null}
+            {svcs.length > 0 && (
+              <div>
+                <dt className="tracked">Services provided</dt>
+                <dd className="svc-chips">
+                  {svcs.map((s) => <SceneLink key={s.slug} href={`/work?service=${s.slug}`} className="svc-chip">{s.name}</SceneLink>)}
+                </dd>
+              </div>
+            )}
             <div><dt className="tracked">Published</dt><dd>{formatDate(p.publishedAt)}</dd></div>
             <div><dt className="tracked">Read</dt><dd>{readTime(p.content, p.metadata?.readTime)}</dd></div>
           </dl>
@@ -78,6 +87,7 @@ export default async function ProjectPage({ params }: Props) {
         <section className="section">
           <div className="section-head"><p className="tracked">Screens</p><h2 className="serif-md">A closer look</h2></div>
           <Screens images={shots} title={p.title} />
+          <div className="center-link"><SceneLink href={`/gallery?project=${p.slug}`} className="tracked link-under">All {p.title} images in the gallery →</SceneLink></div>
         </section>
       )}
 

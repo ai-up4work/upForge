@@ -22,6 +22,19 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => setOpen(false), [pathname]);
+  // lock the page behind the open menu; Escape closes it
+  useEffect(() => {
+    if (!open) return;
+    const html = document.documentElement;
+    const prev = html.style.overflow;
+    html.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      html.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
   useEffect(() => {
     const f = () => setScrolled(window.scrollY > 24);
     f();
@@ -47,7 +60,7 @@ export default function Nav() {
   );
 
   return (
-    <header className={`nav${scrolled ? " is-scrolled" : ""}`}>
+    <header className={`nav${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}>
       <nav aria-label="Main">
         <ul className="nav-row">
           {item(LEFT[0], 0)}

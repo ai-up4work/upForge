@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import ServiceArt from "@/components/ServiceArt";
+import ProjectTile from "@/components/ProjectTile";
 import { notFound } from "next/navigation";
 import PageIntro from "@/components/PageIntro";
 import Faq from "@/components/Faq";
@@ -7,12 +8,10 @@ import ContactPanel from "@/components/ContactPanel";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
-import ProjectGlyph from "@/components/ProjectGlyph";
 import { SceneLink } from "@/components/Scene";
-import { getService, services } from "@/lib/services";
+import { servicesOf, getService, services } from "@/lib/services";
 import { getProjects } from "@/lib/data";
 import { breadcrumbs, faqPage, serviceSchema } from "@/lib/seo";
-import { cld } from "@/lib/format";
 import { steps } from "@/lib/content";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -27,9 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!s) return { title: "Service not found" };
   return {
     title: { absolute: `${s.title} | Upforge` },
+    keywords: [s.keyword, `${s.name} Sri Lanka`, `${s.name} Colombo`, `best ${s.keyword}`, ...s.matchTags.map((t) => `${t} Sri Lanka`)],
     description: s.description,
     alternates: { canonical: `/services/${s.slug}` },
-    openGraph: { title: s.title, description: s.description, url: `/services/${s.slug}`, images: [s.image] },
+    openGraph: { title: s.title, description: s.description, url: `/services/${s.slug}` },
   };
 }
 
@@ -37,7 +37,7 @@ export default async function ServicePageView({ params }: Props) {
   const s = getService((await params).slug);
   if (!s) notFound();
   const projects = await getProjects();
-  const related = projects.filter((p) => p.tags?.some((t) => s.matchTags.includes(t))).slice(0, 3);
+  const related = projects.filter((p) => servicesOf(p).some((x) => x.slug === s.slug)).slice(0, 4);
   const others = services.filter((x) => x.slug !== s.slug);
 
   return (
@@ -47,7 +47,7 @@ export default async function ServicePageView({ params }: Props) {
 
       <section className="section svc-hero">
         <Reveal className="svc-hero-media">
-          <span className="detail-cover-inner"><Image src={s.image} alt={`${s.name} by Upforge, Sri Lanka`} fill priority sizes="(min-width: 1000px) 40vw, 92vw" style={{ objectFit: "cover" }} /></span>
+          <span className="detail-cover-inner"><ServiceArt slug={s.slug} /></span>
         </Reveal>
         <div className="svc-hero-copy">
           <Reveal><p className="case-lead">{s.intro}</p></Reveal>
@@ -99,24 +99,21 @@ export default async function ServicePageView({ params }: Props) {
 
       {related.length > 0 && (
         <section className="section">
-          <div className="section-head"><p className="tracked">Related work</p><h2 className="serif-md">Recent projects</h2></div>
-          <ul className="more-posts" role="list">
-            {related.map((p) => (
-              <li key={p.slug}>
-                <SceneLink href={`/work/${p.slug}`} className="more-post rel-work">
-                  <span className="rel-media">{p.image ? <Image src={cld(p.image, 800)} alt="" fill sizes="(min-width: 900px) 30vw, 92vw" style={{ objectFit: "cover" }} /> : <ProjectGlyph p={p} />}</span>
-                  <span className="more-title">{p.title}</span>
-                  <span className="wcard-num">{(p.tags ?? []).slice(0, 2).join(" · ")}</span>
-                  <span className="wcard-bar" aria-hidden="true" />
-                </SceneLink>
-              </li>
-            ))}
+          <div className="section-head"><p className="tracked">Projects with this service</p><h2 className="serif-md">{s.name} we&apos;ve delivered</h2></div>
+          <ul className="ptile-grid" role="list">
+            {related.map((p, i) => <ProjectTile key={p.slug} p={p} index={i} />)}
           </ul>
+          <div className="center-link"><SceneLink href={`/work?service=${s.slug}`} className="tracked link-under">All {s.name.toLowerCase()} projects →</SceneLink></div>
         </section>
       )}
 
-      <section className="section">
-        <div className="section-head"><p className="tracked">Questions</p><h2 className="serif-md">{s.name} FAQ</h2></div>
+      <section className="section faq-split">
+        <div className="section-head">
+          <p className="tracked">Questions</p>
+          <h2 className="serif-md">{s.name} FAQ</h2>
+          <p className="faq-side">Common questions from businesses planning {s.name.toLowerCase()} work in Sri Lanka.</p>
+          <SceneLink href={`/contact?need=${encodeURIComponent(s.need)}`} className="tracked link-under">Get a quote →</SceneLink>
+        </div>
         <Faq items={s.faqs} />
       </section>
 

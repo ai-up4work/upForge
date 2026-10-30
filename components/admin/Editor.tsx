@@ -7,6 +7,7 @@ import { Field, Section, Switch, useConfirm, useToast } from "./ui";
 import { CoverField, ImageListField } from "./MediaFields";
 import MarkdownEditor from "./MarkdownEditor";
 import { slugify } from "@/lib/format";
+import { services as SERVICES } from "@/lib/services";
 import type { PostDTO, ProjectDTO } from "@/lib/types";
 
 export type Kind = "projects" | "blog";
@@ -15,7 +16,7 @@ type Item = Partial<ProjectDTO & PostDTO>;
 type Form = {
   title: string; slug: string; description: string; image: string; images: string[]; content: string;
   tags: string; featured: boolean; order: number; publishedAt: string; readTime: string;
-  link: string; avatars: string; author: string; tag: string;
+  link: string; avatars: string; author: string; tag: string; services: string[];
   metaTitle: string; metaDescription: string; ogImage: string;
 };
 
@@ -26,7 +27,7 @@ const toForm = (it?: Item): Form => ({
   featured: it?.featured ?? false, order: it?.order ?? 0,
   publishedAt: it?.publishedAt ? new Date(it.publishedAt).toISOString().slice(0, 10) : today(),
   readTime: it?.metadata?.readTime ?? "", link: it?.link ?? "", avatars: (it?.avatars ?? []).map((a) => a.src).join(", "),
-  author: it?.author ?? "", tag: it?.metadata?.tag ?? "",
+  author: it?.author ?? "", tag: it?.metadata?.tag ?? "", services: it?.services ?? [],
   metaTitle: it?.seo?.metaTitle ?? "", metaDescription: it?.seo?.metaDescription ?? "", ogImage: it?.seo?.ogImage ?? "",
 });
 
@@ -74,6 +75,7 @@ export default function Editor({ kind, item, mediaRoot, onClose, onSaved }: { ki
     if (kind === "projects") {
       payload.images = f.images;
       payload.link = f.link;
+      payload.services = f.services;
       payload.avatars = f.avatars.split(",").map((s) => ({ src: s.trim() })).filter((a) => a.src);
     } else {
       payload.author = f.author;
@@ -166,6 +168,22 @@ export default function Editor({ kind, item, mediaRoot, onClose, onSaved }: { ki
               </Field>
             </div>
           </Section>
+
+          {kind === "projects" && (
+            <Section title="Services provided" desc="Tick what you delivered. The project then appears under that service on the site and in the work filters.">
+              <div className="a-checks">
+                {SERVICES.map((s) => {
+                  const on = f.services.includes(s.slug);
+                  return (
+                    <label key={s.slug} className={`a-check${on ? " on" : ""}`}>
+                      <input type="checkbox" checked={on} onChange={() => set("services", on ? f.services.filter((x) => x !== s.slug) : [...f.services, s.slug])} />
+                      <span>{s.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </Section>
+          )}
 
           <Section title="Media" desc={kind === "projects" ? "The cover shows on cards and at the top of the case study. Extra images appear in the Screens section." : "Optional cover image for the article."}>
             <Field label="Cover image" error={errors.image}>

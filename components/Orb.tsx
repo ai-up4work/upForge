@@ -91,7 +91,7 @@ export default function Orb() {
         setFailed(true);
         return;
       }
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setClearColor(0x000000, 0);
       el.appendChild(renderer.domElement);
 

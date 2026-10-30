@@ -264,3 +264,8 @@
 .a-lead-contact > span { font-weight: 500; margin-right: .5rem; }
 .a-lead-msg { margin: 0; white-space: pre-wrap; line-height: 1.6; background: #f7f8fa; padding: .9rem 1rem; border-radius: 10px; color: var(--a-ink-2); }
 @media (max-width: 759px) { .a-lead-main .a-cell-date { display: none; } }
+
+.a-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.a-check { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--a-line-2); border-radius: 999px; cursor: pointer; font-size: .85rem; user-select: none; transition: background .2s, border-color .2s; }
+.a-check input { accent-color: var(--a-accent); margin: 0; }
+.a-check.on { border-color: var(--a-accent); background: var(--a-accent-soft); color: var(--a-accent); }
