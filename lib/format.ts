@@ -58,3 +58,7 @@ export function balanceLines(text: string, n = 2) {
   if (cur.length) lines.push(cur.join(" "));
   return lines;
 }
+
+
+// kept so files that import cloudinaryId from "@/lib/format" still build
+export { cloudinaryId } from "./cloudinary-id";
