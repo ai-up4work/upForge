@@ -1,4 +1,4 @@
-import ServiceArt from "./ServiceArt";
+import Image from "next/image";
 import { SceneLink } from "./Scene";
 import type { ServicePage } from "@/lib/services";
 
@@ -10,7 +10,7 @@ export default function ServiceCards({ items }: { items: ServicePage[] }) {
         <li key={s.slug}>
           <SceneLink href={`/services/${s.slug}`} className="svc-card">
             <span className="wcard-marker" aria-hidden="true" />
-            <span className="svc-media"><ServiceArt slug={s.slug} /></span>
+            <span className="svc-media"><Image src={s.image} alt="" fill sizes="(min-width: 1100px) 30vw, (min-width: 700px) 45vw, 92vw" style={{ objectFit: "cover" }} /></span>
             <span className="svc-num">{String(i + 1).padStart(2, "0")}</span>
             <span className="svc-name">{s.name}</span>
             <span className="svc-kicker">{s.kicker}</span>

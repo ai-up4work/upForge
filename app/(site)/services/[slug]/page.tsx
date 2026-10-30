@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import ServiceArt from "@/components/ServiceArt";
-import Showcase from "@/components/Showcase";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import PageIntro from "@/components/PageIntro";
 import Faq from "@/components/Faq";
@@ -8,10 +7,12 @@ import ContactPanel from "@/components/ContactPanel";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
+import ProjectGlyph from "@/components/ProjectGlyph";
 import { SceneLink } from "@/components/Scene";
 import { getService, services } from "@/lib/services";
 import { getProjects } from "@/lib/data";
 import { breadcrumbs, faqPage, serviceSchema } from "@/lib/seo";
+import { cld } from "@/lib/format";
 import { steps } from "@/lib/content";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -46,7 +47,7 @@ export default async function ServicePageView({ params }: Props) {
 
       <section className="section svc-hero">
         <Reveal className="svc-hero-media">
-          <span className="detail-cover-inner"><ServiceArt slug={s.slug} /></span>
+          <span className="detail-cover-inner"><Image src={s.image} alt={`${s.name} by Upforge, Sri Lanka`} fill priority sizes="(min-width: 1000px) 40vw, 92vw" style={{ objectFit: "cover" }} /></span>
         </Reveal>
         <div className="svc-hero-copy">
           <Reveal><p className="case-lead">{s.intro}</p></Reveal>
@@ -103,7 +104,7 @@ export default async function ServicePageView({ params }: Props) {
             {related.map((p) => (
               <li key={p.slug}>
                 <SceneLink href={`/work/${p.slug}`} className="more-post rel-work">
-                  <span className="rel-media"><Showcase slug={p.slug} title={p.title} image={p.image || p.images?.[0]} secondary={p.images?.find((x) => x !== (p.image || p.images?.[0]))} link={p.link} sizes="(min-width: 900px) 30vw, 92vw" /></span>
+                  <span className="rel-media">{p.image ? <Image src={cld(p.image, 800)} alt="" fill sizes="(min-width: 900px) 30vw, 92vw" style={{ objectFit: "cover" }} /> : <ProjectGlyph p={p} />}</span>
                   <span className="more-title">{p.title}</span>
                   <span className="wcard-num">{(p.tags ?? []).slice(0, 2).join(" · ")}</span>
                   <span className="wcard-bar" aria-hidden="true" />

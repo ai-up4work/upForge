@@ -1,6 +1,6 @@
 "use client";
 
-import Showcase from "./Showcase";
+import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { LightboxProvider, useLightbox } from "./Lightbox";
 import { cld } from "@/lib/format";
@@ -23,7 +23,7 @@ function Grid({ images, title }: { images: string[]; title: string }) {
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: (i % 2) * 0.1 }}
         >
-          <span className="screen-inner"><Showcase single slug={`${title}-${i}`} title={`${title} screen ${i + 1}`} image={src} sizes="(min-width: 900px) 50vw, 100vw" /></span>
+          <span className="screen-inner"><Image src={cld(src, 1600)} alt={`${title} screen ${i + 1}`} fill sizes="(min-width: 900px) 50vw, 100vw" style={{ objectFit: "cover" }} /></span>
           <span className="screen-num tracked">{String(i + 1).padStart(2, "0")}</span>
         </motion.button>
       ))}

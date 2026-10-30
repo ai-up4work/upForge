@@ -1,4 +1,4 @@
-import Nav from "@/components/Nav";
+ import Nav from "@/components/Nav";
 import FloatingCta from "@/components/FloatingCta";
 import SmoothScroll from "@/components/SmoothScroll";
 import { SceneMain, SceneProvider } from "@/components/Scene";

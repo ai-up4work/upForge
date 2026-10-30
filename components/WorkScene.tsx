@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Showcase from "./Showcase";
+import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import ProjectGlyph from "./ProjectGlyph";
 import { SceneLink, useScene } from "./Scene";
+import { cld } from "@/lib/format";
 import type { ProjectDTO } from "@/lib/types";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -131,7 +132,7 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
                 >
                   <span className="wcard-marker" aria-hidden="true" />
                   <span className="wcard-media" aria-hidden="true">
-                    <Showcase slug={p.slug} title={p.title} image={cover} secondary={p.images?.find((x) => x !== cover)} link={p.link} sizes="(min-width: 900px) 24vw, 90vw" priority={i < 2} />
+                    {cover && <Image src={cld(cover, 900)} alt="" fill sizes="(min-width: 900px) 24vw, 90vw" style={{ objectFit: "cover" }} priority />}
                   </span>
                   <span className="wcard-glyph"><ProjectGlyph p={p} /></span>
                   <span className="wcard-dot" aria-hidden="true" />
@@ -171,7 +172,7 @@ export default function WorkScene({ projects }: { projects: ProjectDTO[] }) {
           return (
             <motion.li key={p.slug} initial={reduce ? false : { opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease }}>
               <SceneLink href={`/work/${p.slug}`} className="wcard-m">
-                <span className="wcard-m-media"><Showcase slug={p.slug} title={p.title} image={cover} secondary={p.images?.find((x) => x !== cover)} link={p.link} sizes="92vw" label={(p.tags ?? [])[0]} /></span>
+                <span className="wcard-m-media">{cover && <Image src={cld(cover, 900)} alt="" fill sizes="92vw" style={{ objectFit: "cover" }} />}</span>
                 <span className="wcard-title">{a}{b && <em> {b}</em>}</span>
                 <span className="wcard-num">{pad(i + 1)}</span>
                 <span className="wcard-bar" aria-hidden="true" />

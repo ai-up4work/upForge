@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { SceneLink } from "./Scene";
-import Showcase from "./Showcase";
+import ProjectGlyph from "./ProjectGlyph";
+import { cld } from "@/lib/format";
 import type { ProjectDTO } from "@/lib/types";
 
 const split = (t: string) => {
@@ -21,7 +23,7 @@ export default function WorkStrip({ projects }: { projects: ProjectDTO[] }) {
             <li key={p.slug}>
               <SceneLink href={`/work/${p.slug}`} className="strip-card">
                 <span className="strip-media">
-                  <Showcase slug={p.slug} title={`${p.title} project by Upforge`} image={cover} secondary={p.images?.find((x) => x !== cover)} link={p.link} sizes="(min-width: 1100px) 24vw, (min-width: 700px) 45vw, 92vw" />
+                  {cover ? <Image src={cld(cover, 900)} alt={`${p.title} project by Upforge`} fill sizes="(min-width: 1100px) 24vw, (min-width: 700px) 45vw, 92vw" style={{ objectFit: "cover" }} /> : <span className="glyph-fallback"><ProjectGlyph p={p} /></span>}
                 </span>
                 <span className="wcard-title">{a}{b && <em> {b}</em>}</span>
                 <span className="wcard-num">{String(i + 1).padStart(2, "0")}</span>

@@ -1,5 +1,5 @@
 import { SceneLink } from "./Scene";
-import { LogoLockup } from "./Logo";
+import { LogoMark } from "./Logo";
 import { site } from "@/lib/content";
 import { services } from "@/lib/services";
 
@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-top">
         <div className="footer-brand">
-          <SceneLink href="/" className="footer-logo" aria-label="Upforge home"><LogoLockup /></SceneLink>
+          <SceneLink href="/" className="footer-logo" aria-label="Upforge home"><LogoMark /></SceneLink>
           <p>Upforge Studio (formerly Up4Work) is a software development company in Colombo, Sri Lanka, building websites, apps, business software and AI tools.</p>
           <p className="tracked dim">{site.email}</p>
         </div>

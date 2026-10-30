@@ -6,9 +6,6 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import { capabilities, principles, steps, techGroups, statement } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
-import ServiceArt from "@/components/ServiceArt";
-
-const capArt = ["web-development-sri-lanka", "ai-development-sri-lanka", "custom-software-development-sri-lanka"];
 import { breadcrumbs } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -29,7 +26,7 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="section-head"><p className="tracked">What we build</p><h2 className="serif-md">Three things, done properly</h2></div>
-        <CardRow cards={capabilities.map((c, i) => ({ title: c.name.split(" ")[0], accent: c.name.split(" ").slice(1).join(" "), body: c.body, art: <ServiceArt slug={capArt[i] ?? capArt[0]} /> }))} />
+        <CardRow cards={capabilities.map((c) => ({ title: c.name.split(" ")[0], accent: c.name.split(" ").slice(1).join(" "), body: c.body, image: c.image }))} />
       </section>
 
       <section className="section">

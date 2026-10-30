@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-export type RowCard = { title: string; accent?: string; body: string; image?: string; art?: ReactNode; meta?: string; icon?: ReactNode };
+export type RowCard = { title: string; accent?: string; body: string; image?: string; meta?: string; icon?: ReactNode };
 
 /** Reference-style outlined cards in a row; hovering one opens it. Number shown only when `numbered`. */
 export default function CardRow({ cards, numbered = false }: { cards: RowCard[]; numbered?: boolean }) {
@@ -25,9 +25,7 @@ export default function CardRow({ cards, numbered = false }: { cards: RowCard[];
             transition={{ duration: 1, ease, delay: i * 0.08 }}
           >
             <span className="wcard-marker" aria-hidden="true" />
-            {c.art ? (
-              <span className="rcard-media">{c.art}</span>
-            ) : c.image ? (
+            {c.image ? (
               <span className="rcard-media"><Image src={c.image} alt="" fill sizes="(min-width: 900px) 25vw, 90vw" style={{ objectFit: "cover" }} /></span>
             ) : (
               <span className="rcard-icon" aria-hidden="true">{c.icon}</span>

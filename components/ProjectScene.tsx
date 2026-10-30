@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import ProjectGlyph from "./ProjectGlyph";
-import Showcase from "./Showcase";
 import { SceneLink } from "./Scene";
 import { cld, titleLines } from "@/lib/format";
 import type { ProjectDTO } from "@/lib/types";
@@ -50,7 +49,7 @@ export default function ProjectScene({ p, kicker }: { p: ProjectDTO; kicker: str
           transition={{ duration: 1.1, ease }}
         >
           <span className="detail-cover-inner">
-            <Showcase slug={p.slug} title={p.title} image={cover} secondary={p.images?.find((x) => x !== cover)} link={p.link} sizes="(min-width: 900px) 36vw, 92vw" priority label={(p.tags ?? []).slice(0, 2).join(" · ")} />
+            {cover ? <Image src={cld(cover, 1400)} alt={`${p.title} cover`} fill priority sizes="(min-width: 900px) 36vw, 92vw" style={{ objectFit: "cover" }} /> : <span className="glyph-fallback"><ProjectGlyph p={p} /></span>}
           </span>
         </motion.div>
 
@@ -62,8 +61,8 @@ export default function ProjectScene({ p, kicker }: { p: ProjectDTO; kicker: str
             transition={{ type: "spring", stiffness: 180, damping: 18, delay: r(0.9) }}
             aria-hidden="true"
           >
-            {p.avatars?.[0]?.src ? (
-              <Image src={cld(p.avatars[0].src, 300)} alt="" fill sizes="120px" style={{ objectFit: "cover" }} />
+            {p.avatars?.[0]?.src || cover ? (
+              <Image src={cld(p.avatars?.[0]?.src || cover!, 300)} alt="" fill sizes="120px" style={{ objectFit: "cover" }} />
             ) : (
               <ProjectGlyph p={p} />
             )}
