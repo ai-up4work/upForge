@@ -1,0 +1,36 @@
+/* ───────── Hero lab (private demo pages) ───────── */
+.lab-gl { position: absolute; inset: 0; z-index: 0; }
+.lab-gl canvas { display: block; width: 100% !important; height: 100% !important; }
+.lab-hero .hero-text { z-index: 2; }
+.lab-steps { position: absolute; z-index: 3; left: 0; right: 0; top: calc(170 * var(--s)); display: flex; justify-content: center; gap: 8px; }
+.lab-steps span { font-size: 10px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: #6d78b8; padding: 6px 10px; border: 1px solid transparent; transition: color .4s, border-color .4s; }
+.lab-steps span.on { color: var(--white); border-color: #3a4686; }
+@media (max-width: 899px), (max-aspect-ratio: 4/5) { .lab-steps { top: 84px; gap: 2px; } .lab-steps span { font-size: 8.5px; padding: 5px 6px; letter-spacing: .12em; } }
+
+.lab-bar { position: fixed; z-index: 65; left: 50%; translate: -50% 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 4px; padding: 6px; background: rgba(5, 10, 36, .92); border: 1.5px solid #2a3266; box-shadow: 0 18px 40px -16px rgba(0,0,0,.8); white-space: nowrap; max-width: calc(100vw - 24px); }
+.lab-badge { font-size: 9px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--abyss); background: var(--orange); padding: 6px 8px; }
+.lab-arrow { display: grid; place-items: center; width: 34px; height: 34px; color: var(--ice); font-size: 1.2rem; border: 1px solid transparent; }
+.lab-arrow:hover { border-color: #3a4686; color: var(--white); }
+.lab-name { font-size: .8rem; color: var(--white); padding: 0 6px; }
+.lab-name b { color: var(--orange); font-weight: 600; margin-right: 4px; }
+.lab-all { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--lav-2); padding: 0 10px 0 6px; }
+.lab-all:hover { color: var(--white); }
+@media (max-width: 520px) { .lab-badge { display: none; } .lab-all { display: none; } }
+body:has(.lab-bar) .fcta { display: none; }
+
+.lab-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 17px; }
+@media (min-width: 760px) { .lab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.lab-card { position: relative; display: grid; gap: 14px; align-content: start; min-height: 300px; padding: 34px clamp(22px, 3vw, 40px) 46px; background: var(--card); border: 1.5px solid var(--line); transition: background .5s, border-color .5s; }
+.lab-card:hover, .lab-card:focus-visible { background: var(--card-on); border-color: #252c58; }
+.lab-card:hover .wcard-bar { width: 128px; background: var(--cyan); }
+.lab-pick { position: absolute; top: 18px; right: 18px; font-size: 9.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--abyss); background: var(--teal); padding: 5px 8px; }
+.lab-card-name { font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.05; color: var(--white); text-transform: uppercase; }
+.lab-card-line { color: var(--body); line-height: 1.6; max-width: 46ch; }
+.lab-card-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: .8rem; color: var(--lav-2); }
+.lab-card-meta > span { display: inline-flex; align-items: center; gap: 8px; }
+.lab-meter { display: inline-flex; gap: 3px; }
+.lab-meter i { width: 14px; height: 5px; background: #222b5a; }
+.lab-meter i.on { background: var(--teal); }
+.lab-open { color: var(--orange) !important; margin-top: 4px; }
+.lab-note { margin: 2rem auto 0; max-width: 62ch; text-align: center; color: var(--lav-2); font-size: .9rem; line-height: 1.7; }
+@media (min-width: 760px) { .lab-grid > li:last-child:nth-child(odd) { grid-column: span 2; } }

@@ -776,25 +776,7 @@ button { font: inherit; color: inherit; }
 .logo-ember { transform-box: fill-box; transform-origin: center; transition: transform .7s var(--ease), filter .7s; }
 a:hover .logo-ember { transform: rotate(90deg); filter: drop-shadow(0 0 6px rgba(240, 160, 110, .8)); }
 
-/* ───────── Intro (first visit) ───────── */
-.uf-loader { display: none; }
-html.uf-intro { overflow: hidden; }
-html.uf-intro .uf-loader { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
-  background: radial-gradient(70% 60% at 50% 45%, #0d1a4a, #00041c 70%); clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.76, 0, .24, 1); }
-html.uf-intro-out .uf-loader { clip-path: inset(0 0 100% 0); }
-html.uf-intro-out .uf-loader-inner { transform: translateY(-40px); opacity: 0; transition: transform .8s var(--ease), opacity .6s; }
-.uf-loader-inner { display: grid; justify-items: center; gap: 22px; }
-.uf-loader-mark { width: clamp(84px, 11vw, 132px); overflow: visible; }
-.uf-loader-line { fill: none; stroke: #aecae3; stroke-width: .6; stroke-dasharray: 1; stroke-dashoffset: 1; animation: uf-draw 1.1s cubic-bezier(.65, 0, .35, 1) .15s forwards; }
-.uf-loader-fill { opacity: 0; animation: uf-fade .7s ease 1.05s forwards; }
-.uf-loader-ember { fill: #f0b888; transform-box: fill-box; transform-origin: center; transform: scale(0) rotate(-90deg); animation: uf-ember .7s cubic-bezier(.34, 1.56, .64, 1) 1.2s forwards; filter: drop-shadow(0 0 6px rgba(240, 150, 100, .9)); }
-.uf-loader-word { display: flex; gap: .42em; margin: 0; font: 600 clamp(1rem, 1.6vw, 1.35rem)/1 var(--sans); color: #eaf2fb; overflow: hidden; padding-left: .42em; }
-.uf-loader-word span { display: block; transform: translateY(110%); animation: uf-rise .7s var(--ease) calc(1.15s + var(--i) * 50ms) forwards; }
-.uf-loader-sub { margin: 0; font: 500 .62rem/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--orange); opacity: 0; animation: uf-fade .6s ease 1.6s forwards; }
-@keyframes uf-draw { to { stroke-dashoffset: 0; } }
-@keyframes uf-fade { to { opacity: 1; } }
-@keyframes uf-ember { to { transform: scale(1) rotate(0); } }
-@keyframes uf-rise { to { transform: none; } }
+/* Intro (first visit): styles live in components/Intro.tsx */
 
 /* ───────── Cursor ring (desktop) ───────── */
 .cursor { position: fixed; left: 0; top: 0; z-index: 999; pointer-events: none; opacity: 0; transition: opacity .3s; }
